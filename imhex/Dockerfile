@@ -50,8 +50,36 @@ if [ "$CUSTOM_GLFW" ]; then
 fi
 EOF
 
+## Download libmagic 
+### Clone libmagic
+RUN git clone https://github.com/file/file /mnt/file
+## Download libmagic dependencies
+RUN apt install -y libtool autoconf
+
 # -- BUILDING STUFF
 ARG JOBS 1
+
+## Build libmagic
+RUN <<EOF
+    ccache -zs
+    set -xe
+    
+    cd /mnt/file
+    autoreconf -is
+
+    # when cross-compiling, libmagic needs to have an the same version installed in the system.
+    # So we install it normally first
+    ./configure --prefix /usr
+    make -j $JOBS install
+
+    # Now, we cross-compile it and install it in the libraries folder
+    CC=o64-gcc CXX=o64-g++ ./configure --prefix /vcpkg/installed/x64-osx-mytriplet --host $OSXCROSS_HOST
+    make -j $JOBS
+    make install
+
+    ccache -s
+    
+EOF
 
 ## Build glfw
 RUN --mount=type=cache,target=/cache <<EOF
@@ -81,7 +109,6 @@ EOF
 ## Patch ImHex with hacks
 COPY toolchain.cmake.2 /osxcross/target/toolchain.cmake
 COPY generator-CMakeLists.txt /mnt/ImHex/lib/external/libromfs/generator/CMakeLists.txt
-COPY magic.c /mnt/ImHex/lib/external/yara/yara/libyara/modules/magic/magic.c
 ## Configure ImHex build
 RUN --mount=type=cache,target=/cache \
     cd /mnt/ImHex && \
