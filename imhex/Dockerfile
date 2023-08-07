@@ -32,26 +32,26 @@ RUN vcpkg install --triplet=x64-osx-mytriplet curl
 ### Install mbedtls dep
 RUN vcpkg install --triplet=x64-osx-mytriplet mbedtls
 
-# -- BUILDING STUFF
-ARG JOBS 1
-
-# Build custom glfw
+## download and patch GLFW
 ARG CUSTOM_GLFW 1
 
-## Clone glfw
+### Clone glfw
 RUN <<EOF
 if [ "$CUSTOM_GLFW" ]; then
     git clone https://github.com/glfw/glfw /mnt/glfw
 fi
 EOF
 
-## Patch glfw
+### Patch glfw
 RUN <<EOF
 if [ "$CUSTOM_GLFW" ]; then
     cd /mnt/glfw
     git apply /mnt/ImHex/dist/macOS/0001-glfw-SW.patch
 fi
 EOF
+
+# -- BUILDING STUFF
+ARG JOBS 1
 
 ## Build glfw
 RUN --mount=type=cache,target=/cache <<EOF
