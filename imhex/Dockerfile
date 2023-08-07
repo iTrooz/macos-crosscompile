@@ -87,14 +87,15 @@ RUN --mount=type=cache,target=/cache \
     cd /mnt/ImHex && \
     # compilers
     CC=o64-gcc CXX=o64-g++ OBJC=o64-clang OBJCXX=o64-clang++ \
+        cmake -G "Ninja" \
         `# ccache flags` \
-        cmake -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_OBJC_COMPILER_LAUNCHER=ccache -DCMAKE_OBJCXX_COMPILER_LAUNCHER=ccache \
+        -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_OBJC_COMPILER_LAUNCHER=ccache -DCMAKE_OBJCXX_COMPILER_LAUNCHER=ccache \
         `# MacOS cross-compiling flags` \
         -DVCPKG_TARGET_TRIPLET=x64-osx-mytriplet -DCMAKE_TOOLCHAIN_FILE=/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=/osxcross/target/toolchain.cmake -DCMAKE_OSX_SYSROOT=/osxcross/target/SDK/MacOSX12.1.sdk -DCMAKE_OSX_DEPLOYMENT_TARGET=12.1 \
         `# Normal ImHex flags` \
         -DIMHEX_GENERATE_PACKAGE=ON \
         `# other flags` \
-        -DIMHEX_STRICT_WARNINGS=OFF -DCMAKE_MAKE_PROGRAM=/usr/bin/make \
+        -DIMHEX_STRICT_WARNINGS=OFF -DCMAKE_MAKE_PROGRAM=/usr/bin/ninja \
         -B build
 ## Build ImHex
 RUN --mount=type=cache,target=/cache <<EOF
