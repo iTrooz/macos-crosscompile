@@ -48,8 +48,6 @@ COPY x64-osx-mytriplet.cmake /vcpkg/triplets/community
 # -- BUILDING STUFF
 ARG JOBS 1
 
-RUN ls /usr/lib/ccache
-
 # Install osxcross
 ## Build cross-compiler clang-17
 RUN --mount=type=cache,target=/cache <<EOF
