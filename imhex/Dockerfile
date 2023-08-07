@@ -95,7 +95,7 @@ RUN --mount=type=cache,target=/cache \
         `# Normal ImHex flags` \
         -DIMHEX_GENERATE_PACKAGE=ON \
         `# other flags` \
-        -DIMHEX_STRICT_WARNINGS=OFF -DCMAKE_MAKE_PROGRAM=/usr/bin/ninja \
+        -DIMHEX_STRICT_WARNINGS=OFF \
         -B build
 ## Build ImHex
 RUN --mount=type=cache,target=/cache <<EOF
