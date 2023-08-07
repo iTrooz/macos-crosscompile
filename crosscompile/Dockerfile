@@ -2,8 +2,7 @@ FROM ubuntu:22.04
 
 ENV PATH                $PATH:/osxcross/target/bin
 ENV LD_LIBRARY_PATH     /osxcross/target/lib
-ENV OSX_VER             12.1
-ENV OSXCROSS_SDK        /osxcross/target/SDK/MacOSX${OSX_VER}.sdk
+ENV OSXCROSS_SDK        /osxcross/target/SDK/MacOSX12.1.sdk
 ENV OSXCROSS_TARGET     darwin21.2
 ENV OSXCROSS_TARGET_DIR /osxcross/target
 ENV OSXCROSS_HOST       x86_64-apple-darwin21.2
