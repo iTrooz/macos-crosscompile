@@ -1,4 +1,4 @@
-FROM itrooz/crosscompile as build
+FROM crosscompile as build
 
 # -- DOWNLOADING / INITING STUFF
 
