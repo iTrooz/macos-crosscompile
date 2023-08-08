@@ -58,6 +58,7 @@ RUN apt install -y libtool autoconf
 
 # -- BUILDING STUFF
 ARG JOBS 1
+ARG BUILD_TYPE Debug
 
 ## Build libmagic
 RUN <<EOF
@@ -120,7 +121,7 @@ RUN --mount=type=cache,target=/cache \
         `# MacOS cross-compiling flags` \
         -DVCPKG_TARGET_TRIPLET=x64-osx-mytriplet -DCMAKE_TOOLCHAIN_FILE=/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=/osxcross/target/toolchain.cmake -DCMAKE_OSX_SYSROOT=/osxcross/target/SDK/MacOSX12.1.sdk -DCMAKE_OSX_DEPLOYMENT_TARGET=12.1 \
         `# Normal ImHex flags` \
-        -DIMHEX_GENERATE_PACKAGE=ON \
+        -DIMHEX_GENERATE_PACKAGE=ON -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
         `# other flags` \
         -DIMHEX_STRICT_WARNINGS=OFF \
         -B build
