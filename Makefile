@@ -7,11 +7,11 @@ crosscompile:
 
 .PHONY: imhex_img
 imhex_img:
-	docker buildx build imhex        --progress plain -t imhex        --build-arg 'JOBS=$(JOBS)' --build-arg 'BUILD_TYPE=$(BUILD_TYPE)' --build-arg 'CUSTOM_GLFW=1' --target=build
+	docker buildx build imhex        --progress plain -t imhex        --build-arg 'JOBS=$(JOBS)' --build-arg 'BUILD_TYPE=$(BUILD_TYPE)' --build-arg 'CUSTOM_GLFW=$(CUSTOM_GLFW)' --target=build
 
 .PHONY: imhex_bin
 imhex_bin:
-	docker buildx build imhex        --progress plain                 --build-arg 'JOBS=$(JOBS)' --build-arg 'BUILD_TYPE=$(BUILD_TYPE)' --build-arg 'CUSTOM_GLFW=1' --output .        
+	docker buildx build imhex        --progress plain                 --build-arg 'JOBS=$(JOBS)' --build-arg 'BUILD_TYPE=$(BUILD_TYPE)' --build-arg 'CUSTOM_GLFW=$(CUSTOM_GLFW)' --output .        
 
 .PHONY: clean
 clean:
