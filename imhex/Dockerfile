@@ -64,7 +64,7 @@ ARG JOBS 1
 ARG BUILD_TYPE Debug
 
 ## Build libmagic
-RUN <<EOF
+RUN --mount=type=cache,target=/cache <<EOF
     ccache -zs
     set -xe
     
