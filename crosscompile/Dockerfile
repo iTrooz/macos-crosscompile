@@ -50,6 +50,7 @@ ARG JOBS 1
 # Install osxcross
 ## Build cross-compiler clang-17
 RUN --mount=type=cache,target=/cache <<EOF
+    set -xe
     ccache -zs
     
     cd /osxcross
@@ -61,6 +62,7 @@ EOF
 RUN apt install -y gcc g++ zlib1g-dev libmpc-dev libmpfr-dev libgmp-dev
 ## Build cross-compiler gcc-13
 RUN --mount=type=cache,target=/cache <<EOF
+    set -xe
     ccache -zs
 
     cd /osxcross

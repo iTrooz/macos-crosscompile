@@ -21,6 +21,7 @@ RUN cp /osxcross/target/bin/x86_64-apple-darwin21.2-otool /usr/bin/otool
 RUN vcpkg install --triplet=x64-osx-mytriplet freetype
 ### Install glfw3 dep
 RUN <<EOF
+set -xe
 if [ "$CUSTOM_GLFW" ]; then
     echo "Flag confirmation: using custom GLFW for software rendering"
 else
@@ -37,6 +38,7 @@ ARG CUSTOM_GLFW 1
 
 ### Clone glfw
 RUN <<EOF
+set -xe
 if [ "$CUSTOM_GLFW" ]; then
     git clone https://github.com/glfw/glfw /mnt/glfw
 fi
@@ -44,6 +46,7 @@ EOF
 
 ### Patch glfw
 RUN <<EOF
+set -xe
 if [ "$CUSTOM_GLFW" ]; then
     cd /mnt/glfw
     git apply /mnt/ImHex/dist/macOS/0001-glfw-SW.patch
@@ -84,6 +87,7 @@ EOF
 
 ## Build glfw
 RUN --mount=type=cache,target=/cache <<EOF
+set -xe
 if [ "$CUSTOM_GLFW" ]; then
     ccache -zs
 
@@ -128,6 +132,7 @@ RUN --mount=type=cache,target=/cache \
 ## Build ImHex
 RUN --mount=type=cache,target=/cache <<EOF
     ccache -zs
+    set -xe
 
     cd /mnt/ImHex
     cmake --build build --parallel $JOBS
@@ -140,6 +145,7 @@ EOF
 RUN apt install -y genisoimage
 ## Move everything that need to be packaged inside a directory
 RUN <<EOF
+set -xe
 cd /mnt/ImHex/build
 mkdir installDir
 mv imhex.app installDir
