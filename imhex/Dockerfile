@@ -113,7 +113,6 @@ EOF
 # Build ImHex
 ## Patch ImHex with hacks
 COPY toolchain.cmake.2 /osxcross/target/toolchain.cmake
-COPY generator-CMakeLists.txt /mnt/ImHex/lib/external/libromfs/generator/CMakeLists.txt
 ## Configure ImHex build
 RUN --mount=type=cache,target=/cache \
     cd /mnt/ImHex && \
@@ -124,6 +123,8 @@ RUN --mount=type=cache,target=/cache \
         -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_OBJC_COMPILER_LAUNCHER=ccache -DCMAKE_OBJCXX_COMPILER_LAUNCHER=ccache \
         `# MacOS cross-compiling flags` \
         -DVCPKG_TARGET_TRIPLET=x64-osx-mytriplet -DCMAKE_TOOLCHAIN_FILE=/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=/osxcross/target/toolchain.cmake -DCMAKE_OSX_SYSROOT=/osxcross/target/SDK/MacOSX12.1.sdk -DCMAKE_OSX_DEPLOYMENT_TARGET=12.1 \
+        `# Override compilers for code generators` \
+        -DBUILD_C_COMPILER=/usr/bin/gcc -DBUILD_CXX_COMPILER=/usr/bin/g++ \
         `# Normal ImHex flags` \
         -DIMHEX_GENERATE_PACKAGE=ON -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
         `# other flags` \
