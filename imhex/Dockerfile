@@ -7,9 +7,6 @@ FROM crosscompile as build
 ## Install make
 RUN apt install -y make
 
-## Clone ImHex
-RUN git clone --recursive https://github.com/iTrooz/ImHex   /mnt/ImHex 
-
 # fix environment
 ## add install_name_tool for cmake command that won't have the right env set (see PostprocessBundle.cmake function postprocess_bundle())
 RUN cp /osxcross/build/cctools-port/cctools/misc/install_name_tool /usr/bin/install_name_tool
@@ -33,10 +30,9 @@ RUN vcpkg install --triplet=x64-osx-mytriplet curl
 ### Install mbedtls dep
 RUN vcpkg install --triplet=x64-osx-mytriplet mbedtls
 
-## download and patch GLFW
 ARG CUSTOM_GLFW 1
 
-### Clone glfw
+## Clone glfw
 RUN <<EOF
 set -xe
 if [ "$CUSTOM_GLFW" ]; then
@@ -44,19 +40,10 @@ if [ "$CUSTOM_GLFW" ]; then
 fi
 EOF
 
-### Patch glfw
-RUN <<EOF
-set -xe
-if [ "$CUSTOM_GLFW" ]; then
-    cd /mnt/glfw
-    git apply /mnt/ImHex/dist/macOS/0001-glfw-SW.patch
-fi
-EOF
-
-## Download libmagic 
+## Download libmagic
 ### Clone libmagic
 RUN git clone https://github.com/file/file /mnt/file
-## Download libmagic dependencies
+### Download libmagic dependencies
 RUN apt install -y libtool autoconf
 
 # -- BUILDING STUFF
@@ -85,6 +72,16 @@ RUN --mount=type=cache,target=/cache <<EOF
     
 EOF
 
+## Patch glfw
+COPY --from=imhex /dist/macOS/0001-glfw-SW.patch /tmp
+RUN <<EOF
+set -xe
+if [ "$CUSTOM_GLFW" ]; then
+    cd /mnt/glfw
+    git apply /tmp/0001-glfw-SW.patch
+fi
+EOF
+
 ## Build glfw
 RUN --mount=type=cache,target=/cache <<EOF
 set -xe
@@ -111,6 +108,8 @@ fi
 EOF
 
 # Build ImHex
+## Copy ImHex
+COPY --from=imhex / /mnt/ImHex
 ## Patch ImHex with hacks
 COPY toolchain.cmake.2 /osxcross/target/toolchain.cmake
 ## Configure ImHex build
