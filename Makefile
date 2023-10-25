@@ -2,7 +2,7 @@ default:
 	echo "No default target"
 
 .PHONY: crosscompile_img
-crosscompile:
+crosscompile_img:
 	docker buildx build crosscompile --progress plain -t crosscompile --build-arg "JOBS=$(JOBS)"
 
 .PHONY: imhex_img
