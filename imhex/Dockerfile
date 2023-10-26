@@ -1,36 +1,15 @@
 FROM crosscompile as build
 
-# -- DOWNLOADING / INITING STUFF
-
-# download stuff
+# -- DOWNLOADING STUFF
 
 ## Install make
 RUN apt install -y make
 
-# fix environment
-## add install_name_tool for cmake command that won't have the right env set (see PostprocessBundle.cmake function postprocess_bundle())
+## fix environment
+### add install_name_tool for cmake command that won't have the right env set (see PostprocessBundle.cmake function postprocess_bundle())
 RUN cp /osxcross/build/cctools-port/cctools/misc/install_name_tool /usr/bin/install_name_tool
-## a cmake thing wants 'otool' and not '' apparently
+### a cmake thing wants 'otool' and not '' apparently
 RUN cp /osxcross/target/bin/x86_64-apple-darwin21.2-otool /usr/bin/otool
-
-## Configure vcpkg deps
-### Install freetype dep
-RUN vcpkg install --triplet=x64-osx-mytriplet freetype
-### Install glfw3 dep
-RUN <<EOF
-set -xe
-if [ "$CUSTOM_GLFW" ]; then
-    echo "Flag confirmation: using custom GLFW for software rendering"
-else
-    vcpkg install --triplet=x64-osx-mytriplet glfw3
-fi
-EOF
-### Install libcurl dep
-RUN vcpkg install --triplet=x64-osx-mytriplet curl
-### Install mbedtls dep
-RUN vcpkg install --triplet=x64-osx-mytriplet mbedtls
-
-ARG CUSTOM_GLFW 1
 
 ## Clone glfw
 RUN <<EOF
@@ -45,6 +24,24 @@ EOF
 RUN git clone https://github.com/file/file /mnt/file
 ### Download libmagic dependencies
 RUN apt install -y libtool autoconf
+
+# -- DOWNLOADING + BUILDING STUFF
+## Install libcurl dep
+RUN vcpkg install --triplet=x64-osx-mytriplet curl
+## Install mbedtls dep
+RUN vcpkg install --triplet=x64-osx-mytriplet mbedtls
+## Install freetype dep
+RUN vcpkg install --triplet=x64-osx-mytriplet freetype
+## Install glfw3 dep
+ARG CUSTOM_GLFW
+RUN <<EOF
+set -xe
+if [ "$CUSTOM_GLFW" ]; then
+    echo "Flag confirmation: using custom GLFW for software rendering"
+else
+    vcpkg install --triplet=x64-osx-mytriplet glfw3
+fi
+EOF
 
 # -- BUILDING STUFF
 ARG JOBS 1
