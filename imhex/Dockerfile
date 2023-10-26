@@ -123,7 +123,7 @@ RUN --mount=type=cache,target=/cache \
         `# MacOS cross-compiling flags` \
         -DVCPKG_TARGET_TRIPLET=x64-osx-mytriplet -DCMAKE_TOOLCHAIN_FILE=/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=/osxcross/target/toolchain.cmake -DCMAKE_OSX_SYSROOT=/osxcross/target/SDK/MacOSX12.1.sdk -DCMAKE_OSX_DEPLOYMENT_TARGET=12.1 \
         `# Override compilers for code generators` \
-        -DBUILD_C_COMPILER=/usr/bin/gcc -DBUILD_CXX_COMPILER=/usr/bin/g++ \
+        -DNATIVE_CMAKE_C_COMPILER=/usr/bin/gcc -DNATIVE_CMAKE_CXX_COMPILER=/usr/bin/g++ \
         `# Normal ImHex flags` \
         -DIMHEX_GENERATE_PACKAGE=ON -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
         `# other flags` \
