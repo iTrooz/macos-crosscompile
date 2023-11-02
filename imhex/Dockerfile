@@ -1,5 +1,7 @@
 FROM crosscompile as build
 
+ENV MACOSX_DEPLOYMENT_TARGET 12.1
+
 # -- DOWNLOADING STUFF
 
 ## Install make
@@ -9,7 +11,7 @@ RUN apt install -y make
 ### add install_name_tool for cmake command that won't have the right env set (see PostprocessBundle.cmake function postprocess_bundle())
 RUN cp /osxcross/build/cctools-port/cctools/misc/install_name_tool /usr/bin/install_name_tool
 ### a cmake thing wants 'otool' and not '' apparently
-RUN cp /osxcross/target/bin/x86_64-apple-darwin21.2-otool /usr/bin/otool
+RUN cp /osxcross/target/bin/x86_64-apple-darwin23-otool /usr/bin/otool
 
 ## Clone glfw
 RUN <<EOF
@@ -32,6 +34,9 @@ RUN vcpkg install --triplet=x64-osx-mytriplet curl
 RUN vcpkg install --triplet=x64-osx-mytriplet mbedtls
 ## Install freetype dep
 RUN vcpkg install --triplet=x64-osx-mytriplet freetype
+## Install jthread external library
+RUN vcpkg install --triplet=x64-osx-mytriplet josuttis-jthread
+
 ## Install glfw3 dep
 ARG CUSTOM_GLFW
 RUN <<EOF
@@ -61,7 +66,7 @@ RUN --mount=type=cache,target=/cache <<EOF
     make -j $JOBS install
 
     # Now, we cross-compile it and install it in the libraries folder
-    CC=o64-gcc CXX=o64-g++ ./configure --prefix /vcpkg/installed/x64-osx-mytriplet --host $OSXCROSS_HOST
+    CC=o64-clang CXX=o64-clang++ ./configure --prefix /vcpkg/installed/x64-osx-mytriplet --host $OSXCROSS_HOST
     make -j $JOBS
     make install
 
@@ -96,7 +101,7 @@ if [ "$CUSTOM_GLFW" ]; then
           -DCMAKE_OBJC_COMPILER_LAUNCHER=ccache         \
           -DCMAKE_OBJCXX_COMPILER_LAUNCHER=ccache       \
           -DCMAKE_INSTALL_PREFIX=/vcpkg/installed/x64-osx-mytriplet \
-          -DVCPKG_TARGET_TRIPLET=x64-osx-mytriplet -DCMAKE_TOOLCHAIN_FILE=/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=/osxcross/target/toolchain.cmake -DCMAKE_OSX_SYSROOT=/osxcross/target/SDK/MacOSX12.1.sdk -DCMAKE_OSX_DEPLOYMENT_TARGET=12.1 \
+          -DVCPKG_TARGET_TRIPLET=x64-osx-mytriplet -DCMAKE_TOOLCHAIN_FILE=/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=/osxcross/target/toolchain.cmake -DCMAKE_OSX_SYSROOT=/osxcross/target/SDK/MacOSX14.0.sdk -DCMAKE_OSX_DEPLOYMENT_TARGET=14.0 \
         ..
     ninja -j $JOBS install
 
@@ -109,18 +114,18 @@ EOF
 COPY --from=imhex / /mnt/ImHex
 ## Patch ImHex with hacks
 COPY toolchain.cmake.2 /osxcross/target/toolchain.cmake
-## Configure ImHex build
+# Configure ImHex build
 RUN --mount=type=cache,target=/cache \
     cd /mnt/ImHex && \
     # compilers
-    CC=o64-gcc CXX=o64-g++ OBJC=o64-clang OBJCXX=o64-clang++ \
+    CC=o64-clang CXX=o64-clang++ OBJC=o64-clang OBJCXX=o64-clang++ \
         cmake -G "Ninja" \
         `# ccache flags` \
         -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_OBJC_COMPILER_LAUNCHER=ccache -DCMAKE_OBJCXX_COMPILER_LAUNCHER=ccache \
         `# MacOS cross-compiling flags` \
-        -DVCPKG_TARGET_TRIPLET=x64-osx-mytriplet -DCMAKE_TOOLCHAIN_FILE=/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=/osxcross/target/toolchain.cmake -DCMAKE_OSX_SYSROOT=/osxcross/target/SDK/MacOSX12.1.sdk -DCMAKE_OSX_DEPLOYMENT_TARGET=12.1 \
+        -DVCPKG_TARGET_TRIPLET=x64-osx-mytriplet -DCMAKE_TOOLCHAIN_FILE=/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_CHAINLOAD_TOOLCHAIN_FILE=/osxcross/target/toolchain.cmake -DCMAKE_OSX_SYSROOT=/osxcross/target/SDK/MacOSX14.0.sdk -DCMAKE_OSX_DEPLOYMENT_TARGET=14.0 \
         `# Override compilers for code generators` \
-        -DNATIVE_CMAKE_C_COMPILER=/usr/bin/gcc -DNATIVE_CMAKE_CXX_COMPILER=/usr/bin/g++ \
+        -DNATIVE_CMAKE_C_COMPILER=/usr/bin/clang -DNATIVE_CMAKE_CXX_COMPILER=/usr/bin/clang++ \
         `# Normal ImHex flags` \
         -DIMHEX_GENERATE_PACKAGE=ON -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
         `# other flags` \

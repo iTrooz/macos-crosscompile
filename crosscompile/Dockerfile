@@ -2,10 +2,10 @@ FROM ubuntu:22.04
 
 ENV PATH                $PATH:/osxcross/target/bin
 ENV LD_LIBRARY_PATH     /osxcross/target/lib
-ENV OSXCROSS_SDK        /osxcross/target/SDK/MacOSX12.1.sdk
-ENV OSXCROSS_TARGET     darwin21.2
+ENV OSXCROSS_SDK        /osxcross/target/SDK/MacOSX14.0.sdk
+ENV OSXCROSS_TARGET     darwin23
 ENV OSXCROSS_TARGET_DIR /osxcross/target
-ENV OSXCROSS_HOST       x86_64-apple-darwin21.2
+ENV OSXCROSS_HOST       x86_64-apple-darwin23
 
 # -- DOWNLOADING STUFF
 
@@ -35,7 +35,7 @@ RUN cd / &&\
 RUN git clone https://github.com/tpoechtrager/osxcross /osxcross
 
 ## Download SDK
-RUN cd /osxcross/tarballs && wget https://github.com/joseluisq/macosx-sdks/releases/download/12.1/MacOSX12.1.sdk.tar.xz
+RUN cd /osxcross/tarballs && wget https://github.com/joseluisq/macosx-sdks/releases/download/14.0/MacOSX14.0.sdk.tar.xz
 
 # Init stuff
 ## setup ccache dir
@@ -58,18 +58,19 @@ RUN --mount=type=cache,target=/cache <<EOF
     
     ccache -s
 EOF
-## Install dependencies for gcc-13
-RUN apt install -y gcc g++ zlib1g-dev libmpc-dev libmpfr-dev libgmp-dev
-## Build cross-compiler gcc-13
-RUN --mount=type=cache,target=/cache <<EOF
-    set -xe
-    ccache -zs
+# Not needed, because we don't use gcc for cross-compiling anymore
+# ## Install dependencies for gcc-13
+# RUN apt install -y gcc g++ zlib1g-dev libmpc-dev libmpfr-dev libgmp-dev
+# ## Build cross-compiler gcc-13
+# RUN --mount=type=cache,target=/cache <<EOF
+#     set -xe
+#     ccache -zs
 
-    cd /osxcross
-    UNATTENDED=1 CC=/usr/lib/ccache/gcc CXX=/usr/lib/ccache/g++ GCC_VERSION=13.2.0 ./build_gcc.sh
+#     cd /osxcross
+#     UNATTENDED=1 CC=/usr/lib/ccache/gcc CXX=/usr/lib/ccache/g++ GCC_VERSION=13.2.0 ./build_gcc.sh
 
-    ccache -s
-EOF
+#     ccache -s
+# EOF
 
 ## Copy a working toolchain.cmake (the original makes weird errors with zlib when installed libpng, idk why)
 COPY toolchain.cmake /osxcross/target
