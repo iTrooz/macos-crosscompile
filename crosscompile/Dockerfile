@@ -71,6 +71,3 @@ EOF
 
 #     ccache -s
 # EOF
-
-## Copy a working toolchain.cmake (the original makes weird errors with zlib when installed libpng, idk why)
-COPY toolchain.cmake /osxcross/target
