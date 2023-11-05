@@ -23,7 +23,7 @@ RUN --mount=type=cache,target=/var/lib/apt/lists/ wget https://apt.llvm.org/llvm
 
 # Install vcpkg
 RUN cd / &&\
-    git clone --depth 1 -b my_crosscompile https://github.com/Nemirtingas/vcpkg.git vcpkg &&\
+    git clone --depth 1 https://github.com/Microsoft/vcpkg.git vcpkg &&\
     cd /vcpkg &&\
     ./bootstrap-vcpkg.sh -disableMetrics &&\
     ln -s /vcpkg/vcpkg /usr/bin/ &&\
