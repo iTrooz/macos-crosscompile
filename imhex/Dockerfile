@@ -5,7 +5,7 @@ ENV MACOSX_DEPLOYMENT_TARGET 12.1
 # -- DOWNLOADING STUFF
 
 ## Install make
-RUN apt install -y make
+RUN --mount=type=cache,target=/var/lib/apt/lists/ apt update && apt install -y make
 
 ## fix environment
 ### add install_name_tool for cmake command that won't have the right env set (see PostprocessBundle.cmake function postprocess_bundle())
@@ -25,7 +25,7 @@ EOF
 ### Clone libmagic
 RUN git clone https://github.com/file/file /mnt/file
 ### Download libmagic dependencies
-RUN apt install -y libtool autoconf
+RUN --mount=type=cache,target=/var/lib/apt/lists/ apt install -y libtool autoconf
 
 # -- DOWNLOADING + BUILDING STUFF
 ## Install libcurl dep
@@ -144,7 +144,7 @@ EOF
 
 # package ImHex
 ## install genisoimage
-RUN apt install -y genisoimage
+RUN --mount=type=cache,target=/var/lib/apt/lists/ apt install -y genisoimage
 ## Move everything that need to be packaged inside a directory
 RUN <<EOF
 set -xe
