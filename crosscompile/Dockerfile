@@ -30,8 +30,14 @@ RUN cd / &&\
     vcpkg install vcpkg-cmake &&\
     ln -s /vcpkg/downloads/tools/cmake-*/cmake-*/bin/cmake /usr/bin/
 
+RUN --mount=type=cache,target=/cache <<EOF
 ## Clone osxcross
-RUN git clone https://github.com/tpoechtrager/osxcross /osxcross
+set -xe
+git clone https://github.com/tpoechtrager/osxcross /cache/osxcross || true
+cd /cache/osxcross
+git pull
+cp -r /cache/osxcross /osxcross
+EOF
 
 RUN --mount=type=cache,target=/cache <<EOF
 ## Download SDK
