@@ -113,7 +113,7 @@ EOF
 ## Copy ImHex
 COPY --from=imhex / /mnt/ImHex
 ## Patch ImHex with hacks
-COPY toolchain.cmake.2 /osxcross/target/toolchain.cmake
+# COPY toolchain.cmake.2 /osxcross/target/toolchain.cmake
 # Configure ImHex build
 RUN --mount=type=cache,target=/cache \
     cd /mnt/ImHex && \
