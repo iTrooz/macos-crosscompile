@@ -10,15 +10,14 @@ ENV OSXCROSS_HOST       aarch64-apple-darwin23
 # -- DOWNLOADING STUFF
 
 # Install common stuff
-RUN export DEBIAN_FRONTEND=noninteractive &&\
+RUN --mount=type=cache,target=/var/lib/apt/lists/ export DEBIAN_FRONTEND=noninteractive &&\
     export TZ=Etc/UTC &&\
     dpkg --add-architecture i386 &&\
     apt update &&\
     apt -y install lsb-release build-essential python3 python3-pip git wget zip unzip pkg-config curl ninja-build software-properties-common gnupg libssl-dev ccache
 
 # Install clang 17
-RUN wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh && ./llvm.sh 17 &&\
-    apt clean &&\
+RUN --mount=type=cache,target=/var/lib/apt/lists/ wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh && ./llvm.sh 17 &&\
     ln -s /usr/bin/clang-17 /usr/bin/clang &&\
     ln -s /usr/bin/clang++-17 /usr/bin/clang++
 
