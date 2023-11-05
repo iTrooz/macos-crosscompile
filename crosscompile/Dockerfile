@@ -33,8 +33,12 @@ RUN cd / &&\
 ## Clone osxcross
 RUN git clone https://github.com/tpoechtrager/osxcross /osxcross
 
+RUN --mount=type=cache,target=/cache <<EOF
 ## Download SDK
-RUN cd /osxcross/tarballs && wget https://github.com/joseluisq/macosx-sdks/releases/download/14.0/MacOSX14.0.sdk.tar.xz
+set -xe
+wget https://github.com/joseluisq/macosx-sdks/releases/download/14.0/MacOSX14.0.sdk.tar.xz -O /cache/MacOSX14.0.sdk.tar.xz -nc || true
+cp /cache/MacOSX14.0.sdk.tar.xz /osxcross/tarballs
+EOF
 
 # Init stuff
 ## setup ccache dir
