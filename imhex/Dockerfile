@@ -118,7 +118,7 @@ COPY --from=imhex / /mnt/ImHex
 ## Patch ImHex with hacks
 # COPY toolchain.cmake.2 /osxcross/target/toolchain.cmake
 # Configure ImHex build
-RUN --mount=type=cache,target=/cache \
+RUN --mount=type=cache,target=/cache --mount=type=cache,target=/mnt/ImHex/build/_deps \
     cd /mnt/ImHex && \
     # compilers
     CC=o64-clang CXX=o64-clang++ OBJC=/osxcross/target/bin/aarch64-apple-darwin23-clang OBJCXX=/osxcross/target/bin/aarch64-apple-darwin23-clang++ \
@@ -135,7 +135,7 @@ RUN --mount=type=cache,target=/cache \
         -DIMHEX_STRICT_WARNINGS=OFF \
         -B build
 ## Build ImHex
-RUN --mount=type=cache,target=/cache <<EOF
+RUN --mount=type=cache,target=/cache --mount=type=cache,target=/mnt/ImHex/build/_deps <<EOF
     ccache -zs
     set -xe
 
