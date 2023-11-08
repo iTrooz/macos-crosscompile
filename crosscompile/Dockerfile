@@ -80,3 +80,16 @@ EOF
 
 #     ccache -s
 # EOF
+
+ARG DELETE_SDK=1
+RUN <<EOF
+# Conditionally delete the SDK from the image
+set -xe
+ 
+if [ "$DELETE_SDK" ]; then
+    rm -r /osxcross/target/SDK
+    echo "Deleted the SDK from the image"
+else
+    echo "NOT deleting the SDK from the image"
+fi
+EOF

@@ -21,6 +21,9 @@ if [ "$CUSTOM_GLFW" ]; then
 fi
 EOF
 
+## Assume the SDK has been removed from the image, and copy it again
+COPY SDK /osxcross/target/SDK
+
 ## Download libmagic
 ### Clone libmagic
 RUN git clone https://github.com/file/file /mnt/file
