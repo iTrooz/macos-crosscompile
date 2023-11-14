@@ -88,6 +88,7 @@ set -xe
  
 if [ "$DELETE_SDK" ]; then
     rm -r /osxcross/target/SDK
+    rm -r /osxcross/tarballs
     echo "Deleted the SDK from the image"
 else
     echo "NOT deleting the SDK from the image"
