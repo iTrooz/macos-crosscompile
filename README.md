@@ -1,4 +1,4 @@
-This project contains an image capable crosscompiling for MacOS ARM64 (and possibly x64, but you'll need to tweak it a bit). The Dockerfile to generate the image can be found in the folder crosscompile/ and the image can be built using the command `make crosscompile_img` (see the root Makefile)
+This project contains an image capable of crosscompiling for MacOS ARM64 (and possibly x64, but you'll need to tweak it a bit). The Dockerfile to generate the image can be found in the folder crosscompile/ and the image can be built using the command `make crosscompile_img` (see the root Makefile)
 
 You can also use the docker image (without the XCode SDK embedded): https://github.com/itrooz/macos-crosscompile/pkgs/container/macos-crosscompile
 
