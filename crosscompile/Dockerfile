@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 ENV PATH                $PATH:/osxcross/target/bin
 ENV LD_LIBRARY_PATH     /osxcross/target/lib
@@ -16,10 +16,10 @@ RUN --mount=type=cache,target=/var/lib/apt/lists/ export DEBIAN_FRONTEND=noninte
     apt update &&\
     apt -y install lsb-release build-essential python3 python3-pip git wget zip unzip pkg-config curl ninja-build software-properties-common gnupg libssl-dev ccache
 
-# Install clang 17
-RUN --mount=type=cache,target=/var/lib/apt/lists/ wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh && ./llvm.sh 17 &&\
-    ln -s /usr/bin/clang-17 /usr/bin/clang &&\
-    ln -s /usr/bin/clang++-17 /usr/bin/clang++
+# Install clang 19
+RUN --mount=type=cache,target=/var/lib/apt/lists/ wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh && ./llvm.sh 19 &&\
+    ln -s /usr/bin/clang-19 /usr/bin/clang &&\
+    ln -s /usr/bin/clang++-19 /usr/bin/clang++
 
 # Install vcpkg
 RUN cd / &&\
@@ -57,13 +57,13 @@ COPY arm-osx-mytriplet.cmake /vcpkg/triplets/community
 ARG JOBS 1
 
 # Install osxcross
-## Build cross-compiler clang-17
+## Build cross-compiler clang-19
 RUN --mount=type=cache,target=/cache <<EOF
     set -xe
     ccache -zs
     
     cd /osxcross
-    UNATTENDED=1 CC=/usr/lib/ccache/clang-17 CXX=/usr/lib/ccache/clang++-17 ./build.sh
+    UNATTENDED=1 CC=/usr/lib/ccache/clang-19 CXX=/usr/lib/ccache/clang++-19 ./build.sh
     
     ccache -s
 EOF
